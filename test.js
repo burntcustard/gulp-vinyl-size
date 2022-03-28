@@ -142,7 +142,7 @@ describe('stream-size', () => {
    * timing out) that the stream 'finish' event happens, without any output, as
    * no output is expected when both isStream and isBuffer return false.
    */
-  it('should run transformCallback (even if no stream or buffer) ', done => {
+  it('should run transformCallback() (even if no stream or buffer) ', done => {
     const stream = size();
 
     stream.write({isStream: () => false, isBuffer: () => false});
