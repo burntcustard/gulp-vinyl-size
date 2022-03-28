@@ -1,6 +1,7 @@
 const gulp = require('gulp');
-const streamSize = require('.');
+const size = require('.');
 const Vinyl = require('vinyl');
+const { Readable, Writable } = require('stream');
 let stdoutSpy;
 
 beforeEach(() => {
@@ -15,7 +16,7 @@ describe('stream-size', () => {
   it('should work with gulp and a real file', (done) => {
     gulp
       .src('test.txt')
-      .pipe(streamSize())
+      .pipe(size())
       .pipe(gulp.dest('./'))
       .on('end', () => {
         expect(stdoutSpy).lastCalledWith(
@@ -27,7 +28,7 @@ describe('stream-size', () => {
   });
 
   it('should work with a Vinyl', done => {
-    const stream = streamSize();
+    const stream = size();
 
     stream.write(new Vinyl({
       path: 'example.js',
@@ -36,7 +37,7 @@ describe('stream-size', () => {
 
     stream.on('finish', () => {
       expect(stdoutSpy).lastCalledWith(
-        expect.stringContaining('example.js: 1.21 KB'),
+        expect.stringContaining('example.js: 1.23 kB'),
         expect.anything()
       );
       done();
@@ -46,7 +47,7 @@ describe('stream-size', () => {
   });
 
   it('should log gzipped size with gzip: true', done => {
-    const stream = streamSize({gzip: true});
+    const stream = size({gzip: true});
 
     stream.write(new Vinyl({
       path: 'example.js',
@@ -55,7 +56,7 @@ describe('stream-size', () => {
 
     stream.on('finish', () => {
       expect(stdoutSpy).lastCalledWith(
-        expect.stringContaining('example.js: 1.21 KB (gzipped: 30 B)'),
+        expect.stringContaining('example.js: 1.23 kB (gzipped: 30 B)'),
         expect.anything()
       );
       done();
@@ -65,7 +66,7 @@ describe('stream-size', () => {
   });
 
   it('should log bytes rather than using filesize with bytes: true', done => {
-    const stream = streamSize({bytes: true});
+    const stream = size({bytes: true});
 
     stream.write(new Vinyl({
       path: 'example.js',
@@ -84,7 +85,7 @@ describe('stream-size', () => {
   });
 
   it('should pass options to the filesize package', done => {
-    const stream = streamSize({standard: 'iec'});
+    const stream = size({base: 2});
 
     stream.write(new Vinyl({
       path: 'example.js',
@@ -103,7 +104,7 @@ describe('stream-size', () => {
   });
 
   it('should run the callback function with it\'s parameter', done => {
-    const stream = streamSize({}, size => process.stdout.write(`${size}`));
+    const stream = size({}, size => process.stdout.write(`${size}`));
 
     stream.write(new Vinyl({
       path: 'example.js',
@@ -111,7 +112,7 @@ describe('stream-size', () => {
     }));
 
     stream.on('finish', () => {
-      expect(stdoutSpy).lastCalledWith('1.21 KB');
+      expect(stdoutSpy).lastCalledWith('1.23 kB');
       done();
     });
 
@@ -119,7 +120,7 @@ describe('stream-size', () => {
   });
 
   it('should have filename, size, gzip props on the callback param', done => {
-    const stream = streamSize({}, info => process.stdout.write(
+    const stream = size({}, info => process.stdout.write(
       `${info.filename}: ${info.size} (gzipped: ${info.gzip})`
     ));
 
@@ -129,7 +130,25 @@ describe('stream-size', () => {
     }));
 
     stream.on('finish', () => {
-      expect(stdoutSpy).lastCalledWith('example.js: 1.21 KB (gzipped: 30 B)');
+      expect(stdoutSpy).lastCalledWith('example.js: 1.23 kB (gzipped: 30 B)');
+      done();
+    });
+
+    stream.end();
+  });
+
+  /**
+   * Checking if transformCallback() is run is tricky, so we just test (by not
+   * timing out) that the stream 'finish' event happens, without any output, as
+   * no output is expected when both isStream and isBuffer return false.
+   */
+  it('should run transformCallback() (even if no stream or buffer) ', done => {
+    const stream = size();
+
+    stream.write({isStream: () => false, isBuffer: () => false});
+
+    stream.on('finish', () => {
+      expect(stdoutSpy).not.toHaveBeenCalled();
       done();
     });
 

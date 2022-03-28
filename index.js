@@ -14,9 +14,8 @@ module.exports = (options = {}, callback) => {
   }
 
   function getSize(file) {
-    let info = {
+    const info = {
       filename: file.relative,
-      sizeString: 'test',
       toString: () => info.sizeString
     };
 
