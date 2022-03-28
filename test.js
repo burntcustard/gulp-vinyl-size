@@ -37,7 +37,7 @@ describe('stream-size', () => {
 
     stream.on('finish', () => {
       expect(stdoutSpy).lastCalledWith(
-        expect.stringContaining('example.js: 1.21 KB'),
+        expect.stringContaining('example.js: 1.23 kB'),
         expect.anything()
       );
       done();
@@ -56,7 +56,7 @@ describe('stream-size', () => {
 
     stream.on('finish', () => {
       expect(stdoutSpy).lastCalledWith(
-        expect.stringContaining('example.js: 1.21 KB (gzipped: 30 B)'),
+        expect.stringContaining('example.js: 1.23 kB (gzipped: 30 B)'),
         expect.anything()
       );
       done();
@@ -85,7 +85,7 @@ describe('stream-size', () => {
   });
 
   it('should pass options to the filesize package', done => {
-    const stream = size({standard: 'iec'});
+    const stream = size({base: 2});
 
     stream.write(new Vinyl({
       path: 'example.js',
@@ -112,7 +112,7 @@ describe('stream-size', () => {
     }));
 
     stream.on('finish', () => {
-      expect(stdoutSpy).lastCalledWith('1.21 KB');
+      expect(stdoutSpy).lastCalledWith('1.23 kB');
       done();
     });
 
@@ -130,7 +130,7 @@ describe('stream-size', () => {
     }));
 
     stream.on('finish', () => {
-      expect(stdoutSpy).lastCalledWith('example.js: 1.21 KB (gzipped: 30 B)');
+      expect(stdoutSpy).lastCalledWith('example.js: 1.23 kB (gzipped: 30 B)');
       done();
     });
 
