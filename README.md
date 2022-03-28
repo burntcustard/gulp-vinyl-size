@@ -25,8 +25,8 @@ function copyScripts() {
     .pipe(gulp.dest('/dist/js/'));
 }
 
-// [13:01:44] main.js: 3.13 KB
-// [13:01:45] demo.js: 1.09 KB
+// [13:01:44] main.js: 3.13 kB
+// [13:01:45] demo.js: 1.09 kB
 ```
 
 ## Options
@@ -40,7 +40,7 @@ Additionally log gzipped-size.
 ```js
 .pipe(size({gzip: true}))
 
-// [12:32:22] main.js: 5.29 KB (2.18 KB gzipped)
+// [12:32:22] main.js: 5.29 kB (2.18 kB gzipped)
 ```
 
 ### bytes (Default: `false`)
@@ -58,7 +58,7 @@ Log size in bytes rather than converting to kilobytes, megabytes, etc.
 All options get passed _directly_ to the size-prettifying package filesize. See [it's npm page](https://www.npmjs.com/package/filesize) for a full list of options.
 
 ```js
-.pipe(size({standard: 'iec', spacer: '|'}))
+.pipe(size({base: 2, spacer: '|'}))
 
 // [12:32:22] main.js: 5.29|KiB
 ```
@@ -70,7 +70,7 @@ The second parameter is a callback function that lets you do whatever you want w
 ```js
 .pipe(size({}, size => console.log(`Minified CSS: ${size}`))
 
-// Minified CSS: 3.13 KB
+// Minified CSS: 3.13 kB
 ```
 
 [fancy-log](https://www.npmjs.com/package/fancy-log) can be used to keep the timestamp when logging via a callback.
@@ -80,7 +80,7 @@ const log = require('fancy-log');
 // ...
 .pipe(size({}, size => log(`Minified CSS: ${size}`)))
 
-// [12:32:22] Minified CSS: 3.13 KB
+// [12:32:22] Minified CSS: 3.13 kB
 ```
 
 ## Advanced usage
@@ -117,7 +117,7 @@ function css() {
 
 // [11:02:38] Starting 'css'...
 // [11:02:39] CSS
-// [11:02:39] └ transpiled 29.06 KB
-// [11:02:40] └ purged     6.31 KB
-// [11:02:40] └ minified   3.13 KB (gzipped: 1.04 KB)
+// [11:02:39] └ transpiled 29.06 kB
+// [11:02:40] └ purged     6.31 kB
+// [11:02:40] └ minified   3.13 kB (gzipped: 1.04 kB)
 ```
